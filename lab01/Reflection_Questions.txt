@@ -1,5 +1,0 @@
-1.	What is the purpose of the flutter doctor command? - 
-2.	What file acts as the entry point of a Flutter application?
-3.	Explain the difference between Hot Reload and Hot Restart.
-4.	How does runApp() build the widget tree?
-5.	Describe how Flutter’s architecture enables cross-platform development
