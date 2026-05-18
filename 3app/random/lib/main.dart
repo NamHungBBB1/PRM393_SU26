@@ -10,172 +10,95 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'RANDOM.ORG Clone',
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-          primary: Colors.orange,
-        ),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
+      home: RandomPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class RandomPage extends StatefulWidget {
+  const RandomPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<RandomPage> createState() => _RandomPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _minController = TextEditingController(text: '1');
-  final TextEditingController _maxController = TextEditingController(text: '100');
+class _RandomPageState extends State<RandomPage> {
+  final _minController = TextEditingController(text: '1');
+  final _maxController = TextEditingController(text: '100');
   int? _result;
 
-  void _generateRandomNumber() {
-    final int min = int.tryParse(_minController.text) ?? 1;
-    final int max = int.tryParse(_maxController.text) ?? 100;
+  void _generate() {
+    final min = int.tryParse(_minController.text) ?? 1;
+    final max = int.tryParse(_maxController.text) ?? 100;
 
-    if (min <= max) {
-      setState(() {
-        _result = min + Random().nextInt(max - min + 1);
-      });
-    } else {
+    if (min > max) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Min must be less than or equal to Max')),
+        const SnackBar(content: Text('Min phải nhỏ hơn hoặc bằng Max')),
       );
+      return;
     }
+
+    setState(() {
+      _result = min + Random().nextInt(max - min + 1);
+    });
+  }
+
+  @override
+  void dispose() {
+    _minController.dispose();
+    _maxController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text(
-          'RANDOM.ORG',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: Colors.orange,
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Container(
-          width: 300,
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.orange, width: 2),
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'True Random Number Generator',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-              ),
-              const Divider(color: Colors.orange),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Min: ', style: TextStyle(fontSize: 14)),
-                  Expanded(
-                    child: SizedBox(
-                      height: 35,
-                      child: TextField(
-                        controller: _minController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Max: ', style: TextStyle(fontSize: 14)),
-                  Expanded(
-                    child: SizedBox(
-                      height: 35,
-                      child: TextField(
-                        controller: _maxController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _generateRandomNumber,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  child: const Text('Generate'),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Column(
-                  children: [
-                    const Text('Result:', style: TextStyle(fontSize: 14)),
-                    const SizedBox(height: 5),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        _result != null ? '$_result' : '',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 15),
+      appBar: AppBar(title: const Text('Random Number')),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Kết quả
+            Text(
+              _result != null ? '$_result' : '?',
+              style: const TextStyle(fontSize: 80, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 40),
 
-            ],
-          ),
+            // Input Min
+            TextField(
+              controller: _minController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Min',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Input Max
+            TextField(
+              controller: _maxController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Max',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Nút Generate
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _generate,
+                child: const Text('Generate'),
+              ),
+            ),
+          ],
         ),
       ),
     );
